@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}
+  name: {{ include "panel.fullname" . }}
   namespace: {{ .Release.Namespace | quote }}
   annotations:
     {{- if .Values.ingress.tls.clusterIssuer }}
@@ -24,7 +24,29 @@ spec:
           service:
             name: {{ include "panel.fullname" . }}
             port:
-              number: 443
+              number: 8081
+  tls:
+    - secretName: {{ include "panel.fullname" . }}-tls
+      hosts:
+      - {{ .Values.ingress.panel }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "kuber.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  annotations:
+    {{- if .Values.ingress.tls.clusterIssuer }}
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.tls.clusterIssuer }}
+    {{- end }}
+    {{- if .Values.ingress.annotations }}
+    {{- range $key, $value := .Values.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.class }}
+  rules:
   - host: {{ .Values.ingress.kuber }}
     http:
       paths:
@@ -34,9 +56,8 @@ spec:
           service:
             name: {{ include "kuber.fullname" . }}
             port:
-              number: 443
+              number: 8080
   tls:
-    - secretName: {{ .Release.Name }}-tls
+    - secretName: {{ include "kuber.fullname" . }}-tls
       hosts:
-      - {{ .Values.ingress.panel }}
       - {{ .Values.ingress.kuber }}

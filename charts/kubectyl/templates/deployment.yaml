@@ -31,6 +31,18 @@ spec:
             mountPath: "/tmp/kubectyl"
           - name: tmp
             mountPath: "/etc/kubectyl"
+      - name: port
+        image: mikefarah/yq
+        command: ["sh", "-c", "yq --inplace '.api.port == \"80\"' /etc/kubectyl/config.yml"]
+        volumeMounts:
+          - name: tmp
+            mountPath: "/etc/kubectyl"
+      - name: disable
+        image: mikefarah/yq
+        command: ["sh", "-c", "yq --inplace '.api.ssl.enabled == \"false\"' /etc/kubectyl/config.yml"]
+        volumeMounts:
+          - name: tmp
+            mountPath: "/etc/kubectyl"
       containers:
       - name: kuber
         image: {{ .Values.kuber.image }}
@@ -40,6 +52,9 @@ spec:
             readOnly: true
           - name: tmp
             mountPath: "/etc/kubectyl"
+        ports:
+        - containerPort: 80
+          name: web
       volumes:
         - name: ssl-certs
           secret:
