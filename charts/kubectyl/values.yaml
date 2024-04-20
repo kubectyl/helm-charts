@@ -12,8 +12,12 @@ ingress:
   panel: panel.example.com
   # The hostname for the Kuber application
   kuber: kuber.example.com
-  # The issuer to use for obtaining TLS certificates
-  clusterIssuer: letsencrypt-prod
+  tls:
+    # Boolean to create the certificate resource
+    # false is useful for cert-manager + traefik automation
+    create: true
+    # The issuer to use for obtaining TLS certificates
+    clusterIssuer: letsencrypt-prod
 panel:
   # The image for the Panel application
   image: quay.io/kubectyl/panel:latest
