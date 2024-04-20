@@ -5,6 +5,12 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
   labels:
     app: kuber
+  {{- with .Values.kuber.deploymentAnnotations }}
+  annotations:
+    {{- range $key, $value := . }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- end }}
 spec:
   replicas: {{ .Values.kuber.replicaCount }}
   selector:

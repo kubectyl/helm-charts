@@ -3,6 +3,14 @@ kind: StatefulSet
 metadata:
   name: {{ include "panel.fullname" . }}
   namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: panel
+  {{- with .Values.panel.statefulSetAnnotations }}
+  annotations:
+    {{- range $key, $value := . }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- end }}
 spec:
   selector:
     matchLabels:

@@ -5,6 +5,12 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
   labels:
     app: panel
+  {{- with .Values.panel.serviceAnnotations }}
+  annotations:
+    {{- range $key, $value := . }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- end }}
 spec:
   ports:
   - name: web
@@ -18,6 +24,12 @@ metadata:
   name: {{ include "kuber.fullname" . }}
   labels:
     app: kuber
+  {{- with .Values.kuber.serviceAnnotations }}
+  annotations:
+    {{- range $key, $value := . }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- end }}
 spec:
   ports:
   - name: http

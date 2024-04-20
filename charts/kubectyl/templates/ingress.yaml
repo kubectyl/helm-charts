@@ -4,13 +4,14 @@ metadata:
   name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace | quote }}
   annotations:
-    {{- if .Values.ingress.clusterIssuer }}
-    cert-manager.io/issuer: {{ .Values.ingress.clusterIssuer }}
+    {{- if .Values.ingress.tls.clusterIssuer }}
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.tls.clusterIssuer }}
     {{- end }}
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/proxy-body-size: 100m
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "120s"
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    {{- if .Values.ingress.annotations }}
+    {{- range $key, $value := .Values.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+    {{- end }}
 spec:
   ingressClassName: {{ .Values.ingress.class }}
   rules:

@@ -18,6 +18,14 @@ ingress:
     create: true
     # The issuer to use for obtaining TLS certificates
     clusterIssuer: letsencrypt-prod
+  # Extra annotations for ingress resource
+  # nginx known annotations
+  # annotations:
+  #   nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  #   nginx.ingress.kubernetes.io/proxy-body-size: 100m
+  #   nginx.ingress.kubernetes.io/proxy-read-timeout: "120s"
+  #   nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+  annotations: {}
 panel:
   # The image for the Panel application
   image: quay.io/kubectyl/panel:latest
@@ -26,12 +34,19 @@ panel:
   storageClass: ""
   # The email address for Letsencrypt
   # Used for Panel only as a reference to enable cert-manager
-  email: abc@gmail.com
+  # Annoatations to apply to the Service
+  serviceAnnotations: {}
+  # Annoatations to apply to the StatefulSet
+  statefulSetAnnotations: {}
 kuber:
   # The image for the Kuber application
   image: quay.io/kubectyl/kuber:latest
   # Will be automatically set to 1 after Panel installation
   replicaCount: 0
+  # Annotatations to apply to the Service
+  serviceAnnotations: {}
+  # Annoatations to apply to the Deployment
+  deploymentAnnotations: {}
 mariadb:
   # Boolean to control if chart should create the mariadb deployment
   create: true
