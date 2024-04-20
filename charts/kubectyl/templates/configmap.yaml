@@ -3,6 +3,8 @@ kind: ConfigMap
 metadata:
   name: panel-config
   namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: panel
 data:
   DB_PASSWORD: {{ .Values.mariadb.auth.password }}
   {{- if .Values.redis.auth.enabled }}
