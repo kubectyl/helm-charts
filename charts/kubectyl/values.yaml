@@ -31,7 +31,11 @@ panel:
   image: quay.io/kubectyl/panel:latest
   # The storage class to use for Panel's persistent volume
   # To use default K8s storage class set this value to ""
+  # This is mutually exclusive with panel.existingVolumeClaim
   storageClass: ""
+  # Provide existing volume claim to be used instead of created claim
+  # This is mutually exclusive with panel.storageClass
+  existingVolumeClaim: ""
   # The email address for Letsencrypt
   # Used for Panel only as a reference to enable cert-manager
   # Annoatations to apply to the Service
