@@ -25,6 +25,8 @@ dependencies:
 - name: mariadb
   version: "11.3.0"
   repository: https://charts.bitnami.com/bitnami
+  condition: mariadb.create
 - name: redis
   version: "17.3.11"
   repository: https://charts.bitnami.com/bitnami
+  condition: redis.create

@@ -5,6 +5,8 @@
 
 ## Overrides for generated resource names
 # See templates/_helpers.tpl
+global:
+  timezone: UTC
 ingress:
   # The Ingress class for routing external traffic to services
   class: nginx
@@ -12,26 +14,54 @@ ingress:
   panel: panel.example.com
   # The hostname for the Kuber application
   kuber: kuber.example.com
-  # The issuer to use for obtaining TLS certificates
-  clusterIssuer: letsencrypt-prod
+  tls:
+    # Boolean to create the certificate resource
+    # false is useful for cert-manager + traefik automation
+    create: true
+    # The issuer to use for obtaining TLS certificates
+    clusterIssuer: letsencrypt-prod
+  # Extra annotations for ingress resource
+  # nginx known annotations
+  # annotations:
+  #   nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  #   nginx.ingress.kubernetes.io/proxy-body-size: 100m
+  #   nginx.ingress.kubernetes.io/proxy-read-timeout: "120s"
+  #   nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+  annotations: {}
 panel:
   # The image for the Panel application
-  image: quay.io/kubectyl/panel:latest
+  image: quay.io/kubectyl/panel:develop
   # The storage class to use for Panel's persistent volume
   # To use default K8s storage class set this value to ""
+  # This is mutually exclusive with panel.existingVolumeClaim
   storageClass: ""
+  # Provide existing volume claim to be used instead of created claim
+  # This is mutually exclusive with panel.storageClass
+  existingVolumeClaim: ""
   # The email address for Letsencrypt
   # Used for Panel only as a reference to enable cert-manager
-  email: abc@gmail.com
+  email: abc@example.com
+  # Annoatations to apply to the Service
+  serviceAnnotations: {}
+  # Annoatations to apply to the StatefulSet
+  statefulSetAnnotations: {}
 kuber:
   # The image for the Kuber application
-  image: quay.io/kubectyl/kuber:latest
+  image: quay.io/kubectyl/kuber:develop
   # Will be automatically set to 1 after Panel installation
   replicaCount: 0
+  # Annotatations to apply to the Service
+  serviceAnnotations: {}
+  # Annoatations to apply to the Deployment
+  deploymentAnnotations: {}
 mariadb:
+  # Boolean to control if chart should create the mariadb deployment
+  create: true
   global:
     storageClass: ""
-  # FATAL ERROR: Upgrade failed
+  # Specify external MariaDB host if applicable
+  # Do not use with mariadb.create:true
+  externalHost: ""
   volumePermissions:
     enabled: true
   image:
@@ -53,12 +83,20 @@ mariadb:
     # The number of secondary MariaDB replicas
     replicaCount: 0
 redis:
+  # Boolean to control if chart should create the mariadb deployment
+  create: true
   global:
-    # The global storage class for Redis pods
+    # The storage class to use for redis' persistent volume
+    # To use default K8s storage class set this value to ""
     storageClass: ""
+  # Specify external MariaDB host if applicable
+  # Do not use with mariadb.create:true
+  externalHost: ""
   auth:
     # Enable authentication for Redis
     enabled: false
+    # Password for Redis authentication
+    password: ""
   master:
     persistence:
       # The size of the Redis master pod's persistent volume

@@ -3,19 +3,32 @@ kind: ConfigMap
 metadata:
   name: panel-config
   namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: panel
 data:
   DB_PASSWORD: {{ .Values.mariadb.auth.password }}
+  {{- if .Values.redis.auth.enabled }}
+  REDIS_PASSWORD: {{ .Values.redis.auth.password }}
+  {{- end }}
   APP_URL: https://{{ .Values.ingress.panel }}
   APP_ENV: production
   APP_ENVIRONMENT_ONLY: "false"
-  APP_TIMEZONE: UTC
+  APP_TIMEZONE: {{ .Values.global.timezone | default "UTC" }}
   CACHE_DRIVER: redis
   SESSION_DRIVER: redis
   QUEUE_DRIVER: redis
+  {{- if .Values.redis.externalHost }}
+  REDIS_HOST: {{ .Values.redis.externalHost }}
+  {{- else -}}
   REDIS_HOST: {{ .Release.Name }}-redis-headless
-  DB_HOST: {{ .Release.Name }}-mariadb
-  DB_USERNAME: kubectyl
+  {{- end }}
+  {{- if .Values.mariadb.externalHost }}
+  DB_HOST: {{ .Values.mariadb.externalHost }}
+  {{- else -}}
+  {{- end }}
+  DB_USERNAME: {{ .Values.mariadb.auth.username | default "kubectyl" }}
   DB_PORT: "3306"
+  DB_DATABASE: {{ .Values.mariadb.auth.database | default "panel" }}
   KUBER_FULLNAME: {{ include "kuber.fullname" . }}
   INGRESS_KUBER: {{ .Values.ingress.kuber }}
   INGRESS_PANEL: {{ .Values.ingress.panel }}

@@ -5,10 +5,18 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
   labels:
     app: panel
+  {{- with .Values.panel.serviceAnnotations }}
+  annotations:
+    {{- range $key, $value := . }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- end }}
 spec:
   ports:
   - name: web
-    port: 443
+    port: 8081
+    protocol: TCP
+    targetPort: 80
   selector:
     app: panel
 ---
@@ -18,9 +26,17 @@ metadata:
   name: {{ include "kuber.fullname" . }}
   labels:
     app: kuber
+  {{- with .Values.kuber.serviceAnnotations }}
+  annotations:
+    {{- range $key, $value := . }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- end }}
 spec:
   ports:
-  - name: http
-    port: 443
+  - name: web
+    port: 8080
+    protocol: TCP
+    targetPort: 80
   selector:
     app: kuber

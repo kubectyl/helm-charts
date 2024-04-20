@@ -3,6 +3,14 @@ kind: StatefulSet
 metadata:
   name: {{ include "panel.fullname" . }}
   namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: panel
+  {{- with .Values.panel.statefulSetAnnotations }}
+  annotations:
+    {{- range $key, $value := . }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- end }}
 spec:
   selector:
     matchLabels:
@@ -43,6 +51,12 @@ spec:
         - name: ssl-certs
           secret:
             secretName: {{ .Release.Name }}-tls
+      {{- if and (.Values.panel.existingVolumeClaim) (not .Values.panel.storageClass) }}
+        - name: panel
+          persistentVolumeClaim:
+            claimName: {{ .Values.panel.existingVolumeClaim }}
+      {{- end }}
+  {{- if and (.Values.panel.storageClass) (not .Values.panel.existingVolumeClaim) }}
   volumeClaimTemplates:
   - metadata:
       name: panel
@@ -55,3 +69,4 @@ spec:
       resources:
         requests:
           storage: 1Gi
+  {{- end }}
