@@ -29,9 +29,13 @@ kuber:
   # Will be automatically set to 1 after Panel installation
   replicaCount: 0
 mariadb:
+  # Boolean to control if chart should create the mariadb deployment
+  create: true
   global:
     storageClass: ""
-  # FATAL ERROR: Upgrade failed
+  # Specify external MariaDB host if applicable
+  # Do not use with mariadb.create:true
+  externalHost: ""
   volumePermissions:
     enabled: true
   image:
@@ -53,12 +57,20 @@ mariadb:
     # The number of secondary MariaDB replicas
     replicaCount: 0
 redis:
+  # Boolean to control if chart should create the mariadb deployment
+  create: true
   global:
-    # The global storage class for Redis pods
+    # The storage class to use for redis' persistent volume
+    # To use default K8s storage class set this value to ""
     storageClass: ""
+  # Specify external MariaDB host if applicable
+  # Do not use with mariadb.create:true
+  externalHost: ""
   auth:
     # Enable authentication for Redis
     enabled: false
+    # Password for Redis authentication
+    password: ""
   master:
     persistence:
       # The size of the Redis master pod's persistent volume
